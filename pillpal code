@@ -1,0 +1,181 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+// Define the Medication class
+class Medication {
+public:
+    std::string name;
+};
+
+// Define the Message class
+class Message {
+public:
+    std::string recipient;
+};
+
+// Define the MedicineOrder class
+class MedicineOrder {
+public:
+    std::string medicineName;
+};
+
+// Define the Patient class
+class Patient {
+public:
+    std::string name;
+    std::string id;
+};
+
+// Define the PatientManagementSystem class
+class PatientManagementSystem {
+public:
+    std::vector<Patient> patients;
+
+    void addPatient(const std::string& name, const std::string& id) {
+        Patient patient;
+        patient.name = name;
+        patient.id = id;
+        patients.push_back(patient);
+    }
+
+    Patient* findPatient(const std::string& id) {
+        for (Patient& patient : patients) {
+            if (patient.id == id) {
+                return &patient;
+            }
+        }
+        return nullptr; // Patient not found
+    }
+};
+
+// Define the MedicationNode class for linked list
+class MedicationNode {
+public:
+    Medication medication;
+    MedicationNode* next;
+
+    MedicationNode(const Medication& med) : medication(med), next(nullptr) {}
+};
+
+// Define the MedicationList class to manage medications using a linked list
+class MedicationList {
+private:
+    MedicationNode* head;
+
+public:
+    MedicationList() : head(nullptr) {}
+
+    void addMedication(const Medication& medication) {
+        MedicationNode* newNode = new MedicationNode(medication);
+        newNode->next = head;
+        head = newNode;
+    }
+
+    void listMedications() {
+        MedicationNode* current = head;
+        std::cout << "List of Medications (Linked List):\n";
+        while (current != nullptr) {
+            std::cout << "Medication Name: " << current->medication.name << std::endl;
+            current = current->next;
+        }
+    }
+};
+
+int main() {
+    PatientManagementSystem patientSystem;
+    std::vector<Medication> medications;
+    std::vector<Message> messages;
+    std::vector<MedicineOrder> orders;
+    std::string patientName, patientID;
+    std::string medicationName, messageRecipient, medicineOrderName;
+    std::string searchID;
+
+    MedicationList medicationList; // Create a linked list to store medications
+
+    int choice;
+    while (true) {
+        std::cout << "1. Add Patient\n2. Add Medication\n3. Add Message\n4. Add Medicine Order\n5. Find Patient\n6. List Messages\n7. List Medicine Orders\n8. List Medications (Linked List)\n9. Exit\n";
+        std::cin >> choice;
+
+        switch (choice) {
+            case 1:
+            {
+                std::cout << "Enter patient name: ";
+                std::cin >> patientName;
+                std::cout << "Enter patient ID: ";
+                std::cin >> patientID;
+                patientSystem.addPatient(patientName, patientID);
+                break;
+            }
+            case 2:
+            {
+                std::cout << "Enter medication name: ";
+                std::cin >> medicationName;
+                Medication medication;
+                medication.name = medicationName;
+                medications.push_back(medication); // Add to the original vector
+
+                // Add to the linked list
+                medicationList.addMedication(medication);
+                break;
+            }
+            case 3:
+            {
+                std::cout << "Enter recipient: ";
+                std::cin >> messageRecipient;
+                Message message;
+                message.recipient = messageRecipient;
+                messages.push_back(message);
+                break;
+            }
+            case 4:
+            {
+                std::cout << "Enter medicine order name: ";
+                std::cin >> medicineOrderName;
+                MedicineOrder order;
+                order.medicineName = medicineOrderName;
+                orders.push_back(order);
+                break;
+            }
+            case 5:
+            {
+                std::cout << "Enter patient ID to search: ";
+                std::cin >> searchID;
+                Patient* foundPatient = patientSystem.findPatient(searchID);
+                if (foundPatient != nullptr) {
+                    std::cout << "Patient found: " << foundPatient->name << std::endl;
+                } else {
+                    std::cout << "Patient not found." << std::endl;
+                }
+                break;
+            }
+            case 6:
+            {
+                std::cout << "List of Messages:\n";
+                for (const Message& message : messages) {
+                    std::cout << "Recipient: " << message.recipient << std::endl;
+                }
+                break;
+            }
+            case 7:
+            {
+                std::cout << "List of Medicine Orders:\n";
+                for (const MedicineOrder& order : orders) {
+                    std::cout << "Medicine Name: " << order.medicineName << std::endl;
+                }
+                break;
+            }
+            case 8:
+            {
+                // List medications using the linked list
+                medicationList.listMedications();
+                break;
+            }
+            case 9:
+                return 0;
+            default:
+                std::cout << "Invalid choice. Try again." << std::endl;
+        }
+    }
+}
